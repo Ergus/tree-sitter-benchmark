@@ -13,17 +13,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+exec := benchmark-c-parser
 
-all: benchmark-c-parser
+all: ${exec}
 
-benchmark-c-parser: main.c
+${exec}: main.c
 	gcc -I tree-sitter/lib/include $< tree-sitter-c/src/parser.c -ltree-sitter -o $@
 
 .PHONY: test clean
 
 clean:
-	rm -rf benchmark-c-parser
+	rm -rf ${exec}
 
-test: benchmark-c-parser
-	./$<
+test: $(exec) xdisp.c
+	./$^
 

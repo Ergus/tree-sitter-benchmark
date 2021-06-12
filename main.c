@@ -20,12 +20,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 #include <tree_sitter/api.h>
 
 // Declare the `tree_sitter_c` function, which is
 TSLanguage *tree_sitter_c();
 
-int main() {
+int main(int argc, char *argv[]) 
+{
+
+	if (argc < 2) {
+		printf("No input file added\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (access(argv[1], R_OK) != 0) {
+		printf("The file %s is not readable\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
 
 	// Create a parser.
 	TSParser *parser = ts_parser_new();
@@ -36,12 +48,11 @@ int main() {
 	ts_parser_set_language(parser, tree_sitter_c());
 
 	// Build a syntax tree based on source code stored in a string.
-	FILE *fp = fopen("xdisp.c", "r");
+	FILE *fp = fopen(argv[1], "r");
 	if (fp == NULL) {
-		printf("No abrio el fichero\n");
-		return 1;
+		printf("Couldn't open the file: %s\n", argv[1]);
+		exit(EXIT_FAILURE);
 	}
-
 
 	fseek(fp, 0, SEEK_END);
 	const size_t nchars = ftell(fp) + 1;
